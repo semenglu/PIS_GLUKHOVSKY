@@ -129,3 +129,39 @@ print(client2.display_short_version())
 client3 = Client(1, "Ivanov", "Ivan", "Ivanovich", "Комментарий")
 print(client1 == client3)  # Должен выводить True
 print(client1 == client2)  # Должен выводить False
+
+
+class ClientSummary:
+    def __init__(self, client_id, surname="", first_name="", patronymic="", comment=""):
+        # Если входные данные строка, парсим её
+        if isinstance(client_id, str):
+            parsed_data = self.parse_input(client_id)
+            client_id = parsed_data.get('client_id', 0)  # по умолчанию 0, если не найден
+            surname = parsed_data.get('surname', "")
+            first_name = parsed_data.get('first_name', "")
+            # patronymic и comment не используются для краткой версии
+
+        self.client_id = client_id
+        self.surname = surname
+        self.first_name = first_name
+
+    def parse_input(self, input_data):
+        # Обрабатывает строку или JSON-строку и возвращает словарь
+        try:
+            import json
+            return json.loads(input_data)
+        except json.JSONDecodeError:
+            # Например, если ожидается, что строка будет в формате:
+            # "client_id=1,surname=Ivanov,first_name=Ivan"
+            parsed_data = {}
+            pairs = input_data.split(',')
+            for pair in pairs:
+                key, value = pair.split('=')
+                parsed_data[key.strip()] = value.strip()
+            return parsed_data
+
+    def display_summary(self):
+        return f"Client ID: {self.client_id}, Surname: {self.surname}, First Name: {self.first_name}"
+
+client_summary = ClientSummary(client_id="client_id=1,surname=Ivanov,first_name=Ivan")
+print(client_summary.display_summary())
