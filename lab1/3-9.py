@@ -1,5 +1,17 @@
+import json
+
 class Client:
-    def __init__(self, client_id, surname, first_name, patronymic, comment):
+    def __init__(self, client_id, surname="", first_name="", patronymic="", comment=""):
+
+        # **Добавлено для поддержки строкового или JSON ввода**
+        if isinstance(client_id, str):
+            parsed_data = self.parse_input(client_id)
+            client_id = parsed_data.get('client_id', 0)  # по умолчанию 0, если не найден
+            surname = parsed_data.get('surname', "")
+            first_name = parsed_data.get('first_name', "")
+            patronymic = parsed_data.get('patronymic', "")
+            comment = parsed_data.get('comment', "")
+
         # Используем статические методы для валидации
         if not self.validate_client_id(client_id):
             raise ValueError("Invalid client ID")
@@ -78,3 +90,11 @@ class Client:
     def validate_comment(comment):
         # допустим, комментарий – это необязательное поле
         return isinstance(comment, str)
+    
+    # **Новый статический метод для обработки строк или JSON ввода**
+    @staticmethod
+    def parse_input(input_data):
+        try:
+            return json.loads(input_data)
+        except json.JSONDecodeError:
+            return {}
