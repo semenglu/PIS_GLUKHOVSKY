@@ -76,6 +76,25 @@ class Client:
             raise ValueError("Invalid comment")
         self.__comment = comment
 
+    # **Методы для вывода полной и краткой версий объекта**
+    def display_full_version(self):
+        return f"Client ID: {self.__client_id}, Surname: {self.__surname}, First Name: {self.__first_name}, Patronymic: {self.__patronymic}, Comment: {self.__comment}"
+
+    def display_short_version(self):
+        return f"{self.__client_id}: {self.__surname} {self.__first_name}"
+
+    # **Метод для сравнения объектов**
+    def __eq__(self, other):
+        if not isinstance(other, Client):
+            return False
+        return (
+            self.__client_id == other.__client_id and
+            self.__surname == other.__surname and
+            self.__first_name == other.__first_name and
+            self.__patronymic == other.__patronymic and
+            self.__comment == other.__comment
+        )
+
 
     # Статические методы для валидации
     @staticmethod
@@ -98,3 +117,15 @@ class Client:
             return json.loads(input_data)
         except json.JSONDecodeError:
             return {}
+    
+# Пример использования
+client1 = Client(1, "Ivanov", "Ivan", "Ivanovich", "Комментарий")
+client2 = Client('{"client_id": 2, "surname": "Petrov", "first_name": "Petr", "patronymic": "Petrovich"}')
+
+print(client1.display_full_version())
+print(client2.display_short_version())
+
+# Сравнение объектов
+client3 = Client(1, "Ivanov", "Ivan", "Ivanovich", "Комментарий")
+print(client1 == client3)  # Должен выводить True
+print(client1 == client2)  # Должен выводить False
