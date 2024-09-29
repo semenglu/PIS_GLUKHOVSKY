@@ -3,11 +3,11 @@ class Client:
         # Используем статические методы для валидации
         if not self.validate_client_id(client_id):
             raise ValueError("Invalid client ID")
-        if not self.validate_surname(surname):
+        if not self.validate_text_field(surname, "surname"):
             raise ValueError("Invalid surname")
-        if not self.validate_first_name(first_name):
+        if not self.validate_text_field(first_name, "first name"):
             raise ValueError("Invalid first name")
-        if not self.validate_patronymic(patronymic):
+        if not self.validate_text_field(patronymic, "patronymic"):
             raise ValueError("Invalid patronymic")
         if not self.validate_comment(comment):
             raise ValueError("Invalid comment")
@@ -71,17 +71,8 @@ class Client:
         return isinstance(client_id, int) and client_id > 0
 
     @staticmethod
-    def validate_surname(surname):
-        return isinstance(surname, str) and bool(surname.strip())
-
-    @staticmethod
-    def validate_first_name(first_name):
-        return isinstance(first_name, str) and bool(first_name.strip())
-
-    @staticmethod
-    def validate_patronymic(patronymic):
-        # возможно, отчество может быть опциональным или требовать другой валидации
-        return isinstance(patronymic, str) and bool(patronymic.strip())
+    def validate_text_field(field, field_name):
+        return isinstance(field, str) and bool(field.strip())
 
     @staticmethod
     def validate_comment(comment):
