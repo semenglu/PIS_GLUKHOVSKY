@@ -74,27 +74,38 @@ class BaseClient:
     def __setattr__(self, name, value):
                 self.name = self.__validator.validate_attr(name, value)
        
-    def parse_input(self, input_data):
-        try:
-            return json.loads(input_data)
-        except json.JSONDecodeError:
-            parsed_data = {}
-            pairs = input_data.split(',')
-            for pair in pairs:
-                key, value = pair.split('=')
-                parsed_data[key.strip()] = value.strip()
-            return parsed_data      
     @staticmethod
-    def validate_client_id(client_id):
-        return isinstance(client_id, int) and client_id > 0
+    def createFromString(self, input_str):
+        parsed_data = {}
+        pairs = input_str.split(',')
+        for pair in pairs:
+            key, value = pair.split('=')
+            parsed_data[key.strip()] = value.strip()
+        return self.__init__(
+            int(parsed_data['client_id']),
+            parsed_data['surname'],
+            parsed_data['first_name'],
+            parsed_data['patronymic'],
+            parsed_data['email'],
+            parsed_data['phone_number'],
+            parsed_data['passport_number'],
+            parsed_data['comment'],
+        )
 
     @staticmethod
-    def validate_text_field(field, field_name):
-        return isinstance(field, str) and bool(field.strip())
+    def createFromJSON(self, input_json):
+        parsed_data = json.loads(input_json)
+        return self.__init__(
+            int(parsed_data['client_id']),
+            parsed_data['surname'],
+            parsed_data['first_name'],
+            parsed_data['patronymic'],
+            parsed_data['email'],
+            parsed_data['phone_number'],
+            parsed_data['passport_number'],
+            parsed_data['comment'],
+        )
 
-    @staticmethod
-    def validate_comment(comment):
-        return isinstance(comment, str)
     
 class FullClient(BaseClient):
     def __init__(self, client_id, surname="", first_name="", patronymic="", comment=""):
