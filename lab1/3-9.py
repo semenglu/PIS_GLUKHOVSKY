@@ -1,24 +1,78 @@
 import json
+import re
+
+
+
+class ClientValidator:
+    field_validators = {
+        'client_id': self.validate_client_id,
+        'surname': self.validate_text_field_no_digits,
+        'first_name': self.validate_text_field_no_digits,
+        'patronymic': self.validate_text_field_no_digits,
+        'email': self.validate_email,
+        'phone_number': self.validate_email,
+        'passport_number': self.passport_number
+    }
+
+    def validate_attr(name, value):
+        if value is not None:
+            return self.field_validators['name'](value)
+        return None
+
+    @staticmethod
+    def validate_client_id(client_id):
+        if isinstance(client_id, int) and client_id > 0:
+            return client_id
+        else:
+            raise ValueError()
+
+    @staticmethod
+    def validate_text_field_no_digits(field, field_name):
+        if isinstance(field, str) and bool(field.strip()) and not any(char.isdigit() for char in field):
+            return field
+        else:
+            raise ValueError()
+
+    @staticmethod
+    def validate_email(email):
+        # Простая валидация email с использованием регулярного выражения
+        pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
+        if isinstance(email, str) and re.match(pattern, email) is not None:
+            return email
+        else:
+            raise ValueError()
+
+    @staticmethod
+    def validate_phone_number(phone_number):
+        # Проверка, что номер телефона состоит только из цифр и, возможно, начинается с +
+        pattern = r"^\+?\d+$"
+        if isinstance(phone_number, str) and re.match(pattern, phone_number) is not None:
+            return phone_number
+        else:
+            raise ValueError()
+
+    @staticmethod
+    def validate_passport_number(passport_number):
+        if isinstance(passport_number, str)
+            return passport_number
+        else:
+            raise ValueError()
 
 class BaseClient:
-    def __init__(self, client_id, surname="", first_name="", patronymic="", comment=""):
+    def __init__(self, client_id, surname=None, first_name=None, patronymic=None, email=None, phone_number=None,passport_number=None, comment=None):
+                
+                self.__validator = ClientValidator()
+                self.client_id = client_id
+                self.surname = surname
+                self.first_name = first_name
+                self.patronymic = patronymic
+                self.email = email
+                self.phone_number = phone_number
+                self.passport_number = passport_number
+                self.comment = comment
 
-        # **Добавлено для поддержки строкового или JSON ввода**
-        if isinstance(client_id, str):
-            parsed_data = self.parse_input(client_id)
-            self.client_id = int(parsed_data.get('client_id', 0))
-            self.surname = parsed_data.get('surname', "")
-            self.first_name = parsed_data.get('first_name', "")
-            self.patronymic = parsed_data.get('patronymic', "")
-            self.comment = parsed_data.get('comment', "")
-
-        else:
-            self.client_id = client_id
-            self.surname = surname
-            self.first_name = first_name
-            self.patronymic = patronymic
-            self.comment = comment      
-
+    def __setattr__(self, name, value):
+                self.name = self.__validator.validate_attr(name, value)
        
     def parse_input(self, input_data):
         try:
