@@ -109,8 +109,7 @@ class BaseClient:
     def __eq__(self, other):
         if not isinstance(other, BaseClient):
             return NotImplemented
-        return (self.client_id == other.client_id and
-                self.surname == other.surname and
+        return (self.surname == other.surname and
                 self.first_name == other.first_name and
                 self.patronymic == other.patronymic and
                 self.email == other.email and
