@@ -5,13 +5,14 @@ import re
 
 class ClientValidator:
     field_validators = {
-        'client_id': self.validate_client_id,
-        'surname': self.validate_text_field_no_digits,
-        'first_name': self.validate_text_field_no_digits,
-        'patronymic': self.validate_text_field_no_digits,
-        'email': self.validate_email,
-        'phone_number': self.validate_email,
-        'passport_number': self.passport_number
+        'client_id': lambda cls, value: cls.validate_client_id(value),
+        'surname': lambda cls, value: cls.validate_text_field_no_digits(value, 'surname'),
+        'first_name': lambda cls, value: cls.validate_text_field_no_digits(value, 'first_name'),
+        'patronymic': lambda cls, value: cls.validate_text_field_no_digits(value, 'patronymic'),
+        'email': lambda cls, value: cls.validate_email(value),
+        'phone_number': lambda cls, value: cls.validate_phone_number(value),
+        'passport_number': lambda cls, value: cls.validate_passport_number(value),
+        'comment': lambda cls, value: cls.validate_text_field_no_digits(value, 'comment')
     }
 
     def validate_attr(name, value):
@@ -140,3 +141,10 @@ class ShortClient(BaseClient):
         initials = f"{self.first_name[0]}." if self.first_name else ""
         patronymic_initial = f"{self.patronymic[0]}." if self.patronymic else ""
         return f"Client ID: {self.client_id}, Surname: {self.surname}, Initials: {initials}{patronymic_initial}"
+    
+
+try:
+    full_client = FullClient(client_id=1, surname="Ivanov", first_name="Ivan", patronymic="Petrovich", email="ivanov@example.com", phone_number="+1234567890", passport_number="11212121", comment="fdfdd")
+    print(full_client.display_full_version())
+except ValueError as e:
+    print(e)
