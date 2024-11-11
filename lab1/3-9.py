@@ -15,9 +15,9 @@ class ClientValidator:
         'comment': lambda cls, value: cls.validate_text_field_no_digits(value, 'comment')
     }
 
-    def validate_attr(name, value):
+    def validate_attr(cls, name, value):
         if value is not None:
-            return self.field_validators['name'](value)
+            return cls.field_validators['name'](value)
         return None
 
     @staticmethod
@@ -62,7 +62,7 @@ class ClientValidator:
 class BaseClient:
     def __init__(self, client_id, surname=None, first_name=None, patronymic=None, email=None, phone_number=None,passport_number=None, comment=None):
                 
-                self.__validator = ClientValidator()
+                self._validator = ClientValidator()
                 self.client_id = client_id
                 self.surname = surname
                 self.first_name = first_name
@@ -73,7 +73,10 @@ class BaseClient:
                 self.comment = comment
 
     def __setattr__(self, name, value):
-                self.name = self.__validator.validate_attr(name, value)
+        if name.startswith('_'):
+            super().__setattr__(name, value)
+        else:
+            super().__setattr__(name, self._validator.validate_attr(name, value))
        
     @staticmethod
     def createFromString(self, input_str):
@@ -84,13 +87,13 @@ class BaseClient:
             parsed_data[key.strip()] = value.strip()
         return self.__init__(
             int(parsed_data['client_id']),
-            parsed_data['surname'],
-            parsed_data['first_name'],
-            parsed_data['patronymic'],
-            parsed_data['email'],
-            parsed_data['phone_number'],
-            parsed_data['passport_number'],
-            parsed_data['comment'],
+            parsed_data['surname', None],
+            parsed_data['first_name', None],
+            parsed_data['patronymic', None],
+            parsed_data['email', None],
+            parsed_data['phone_number', None],
+            parsed_data['passport_number', None],
+            parsed_data['comment', None],
         )
 
     @staticmethod
@@ -98,13 +101,13 @@ class BaseClient:
         parsed_data = json.loads(input_json)
         return self.__init__(
             int(parsed_data['client_id']),
-            parsed_data['surname'],
-            parsed_data['first_name'],
-            parsed_data['patronymic'],
-            parsed_data['email'],
-            parsed_data['phone_number'],
-            parsed_data['passport_number'],
-            parsed_data['comment'],
+            parsed_data['surname', None],
+            parsed_data['first_name', None],
+            parsed_data['patronymic', None],
+            parsed_data['email', None],
+            parsed_data['phone_number', None],
+            parsed_data['passport_number', None],
+            parsed_data['comment', None],
         )
 
     def __eq__(self, other):
@@ -118,7 +121,7 @@ class BaseClient:
                 self.passport_number == other.passport_number)
     
 class FullClient(BaseClient):
-    def __init__(self, client_id, surname="", first_name="", patronymic="",email="", phone_number="", passport_number="", comment=""):
+    def __init__(self, client_id = None, surname="", first_name="", patronymic="",email="", phone_number="", passport_number="", comment=""):
         super().__init__(client_id, surname, first_name, patronymic, email, phone_number, passport_number, comment)
         
     def display_full_version(self):
@@ -133,8 +136,7 @@ class ShortClient(BaseClient):
     def __eq__(self, other):
         if not isinstance(other, BaseClient):
             return NotImplemented
-        return (self.client_id == other.client_id and
-                self.surname == other.surname and
+        return (self.surname == other.surname and
                 self.first_name == other.first_name)
 
     def display_summary(self):
@@ -144,7 +146,7 @@ class ShortClient(BaseClient):
     
 
 try:
-    full_client = FullClient(client_id=1, surname="Ivanov", first_name="Ivan", patronymic="Petrovich", email="ivanov@example.com", phone_number="+1234567890", passport_number="11212121", comment="fdfdd")
+    full_client = FullClient(surname="Ivanov", first_name="Ivan", patronymic="Petrovich", email="ivanov@example.com", phone_number="+1234567890", passport_number="11212121", comment="fdfdd")
     print(full_client.display_full_version())
 except ValueError as e:
     print(e)
