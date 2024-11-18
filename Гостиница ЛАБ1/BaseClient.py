@@ -69,29 +69,21 @@ class BaseClient:
                 print(f"Неправильный формат для пары: '{pair}'")  # Обработка ошибки
         return parsed_data
 
-    def __getParsedDataFromJSON(self, json):
-        return json.loads(json)
-
-
     @staticmethod
-    def createFromString(self, input_str):
-        parsed_data = self.__getParsedDataFromString(input_str)
-        return self.__init__(
-            int(parsed_data['client_id', None]),
-            parsed_data['surname', None],
-            parsed_data['first_name', None],
-    )
+    def __getParsedDataFromJSON(input_json):
+        try:
+            return json.loads(input_json)
+        except json.JSONDecodeError:
+            raise ValueError("Некорректный JSON.")
 
-
-    @staticmethod
-    def createFromJSON(self, input_json):
-        parsed_data = self.__getParsedDataFromJSON(input_json)
-        return self.__init__(
-            int(parsed_data['client_id', None]),
-            parsed_data['surname', None],
-            parsed_data['first_name', None],
+    @classmethod
+    def createFromJSON(cls, input_json):
+        parsed_data = cls.__getParsedDataFromJSON(input_json)
+        return cls(
+            int(parsed_data.get('client_id', 0)),
+            parsed_data.get('surname', ''),
+            parsed_data.get('first_name', '')
         )
-
 
     def __eq__(self, other):
         if not isinstance(other, BaseClient):
