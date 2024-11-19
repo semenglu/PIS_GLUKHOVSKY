@@ -50,13 +50,42 @@ class BaseClient:
         self.surname = surname
         self.first_name = first_name
 
-    def __setattr__(self, name, value):
-        if name.startswith('_'):
-            return super().__setattr__(name, value)
-        if self._validator.validate_attr(name, value):
-            return super().__setattr__(name, value)
+    # client_id
+    @property
+    def client_id(self):
+        return self._client_id
+
+    @client_id.setter
+    def client_id(self, value):
+        if self._validator.validate_attr('client_id', value):
+            self._client_id = value
         else:
-            raise ValueError(f"Некорректное значение для поля '{name}'")
+            raise ValueError(f"Некорректное значение для поля 'client_id'")
+
+    # surname
+    @property
+    def surname(self):
+        return self._surname
+
+    @surname.setter
+    def surname(self, value):
+        if self._validator.validate_attr('surname', value):
+            self._surname = value
+        else:
+            raise ValueError(f"Некорректное значение для поля 'surname'")
+
+    # first_name
+    @property
+    def first_name(self):
+        return self._first_name
+
+    @first_name.setter
+    def first_name(self, value):
+        if self._validator.validate_attr('first_name', value):
+            self._first_name = value
+        else:
+            raise ValueError(f"Некорректное значение для поля 'first_name'")
+
 
     def __getParsedDataFromString(self, string):
         parsed_data = {}
@@ -107,6 +136,65 @@ class FullClient(BaseClient):
         self.passport_number = passport_number
         self.comment = comment
 
+    # patronymic
+    @property
+    def patronymic(self):
+        return self._patronymic
+
+    @patronymic.setter
+    def patronymic(self, value):
+        if self._validator.validate_attr('patronymic', value):
+            self._patronymic = value
+        else:
+            raise ValueError(f"Некорректное значение для поля 'patronymic'")
+
+    # email
+    @property
+    def email(self):
+        return self._email
+
+    @email.setter
+    def email(self, value):
+        if self._validator.validate_attr('email', value):
+            self._email = value
+        else:
+            raise ValueError(f"Некорректное значение для поля 'email'")
+
+    # phone_number
+    @property
+    def phone_number(self):
+        return self._phone_number
+
+    @phone_number.setter
+    def phone_number(self, value):
+        if self._validator.validate_attr('phone_number', value):
+            self._phone_number = value
+        else:
+            raise ValueError(f"Некорректное значение для поля 'phone_number'")
+
+    # passport_number
+    @property
+    def passport_number(self):
+        return self._passport_number
+
+    @passport_number.setter
+    def passport_number(self, value):
+        if self._validator.validate_attr('passport_number', value):
+            self._passport_number = value
+        else:
+            raise ValueError(f"Некорректное значение для поля 'passport_number'")
+
+    # comment
+    @property
+    def comment(self):
+        return self._comment
+
+    @comment.setter
+    def comment(self, value):
+        if self._validator.validate_attr('comment', value):
+            self._comment = value
+        else:
+            raise ValueError(f"Некорректное значение для поля 'comment'")
     @classmethod
     def createFromString(cls, input_str):
         parsed_data = cls.__getParsedDataFromString(input_str)
