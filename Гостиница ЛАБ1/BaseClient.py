@@ -87,7 +87,8 @@ class BaseClient:
             raise ValueError(f"Некорректное значение для поля 'first_name'")
 
 
-    def __getParsedDataFromString(self, string):
+    @staticmethod
+    def __getParsedDataFromString(string):
         parsed_data = {}
         pairs = string.split(',')  # Используем 'string', переданное в функцию
         for pair in pairs:
