@@ -121,10 +121,9 @@ class BaseClient:
         return (self.surname == other.surname and
                 self.first_name == other.first_name)
 
-    def display(self):
+    def __str__(self):
         client_id_display = f"Client ID: {self.client_id}" if self.client_id else "Client ID: None"
-        initials = f"{self.first_name[0]}." if self.first_name else ""
-        return f"{client_id_display}, Surname: {self.surname}, Initials: {initials}"
+        return f"{client_id_display}, Surname: {self.surname}, Passport: {self.passport_number}"
 
 
 class FullClient(BaseClient):
@@ -224,7 +223,7 @@ class FullClient(BaseClient):
             parsed_data.get('comment', ""),
         )
 
-    def display(self):
+    def __str__(self):
         client_id_display = f"Client ID: {self.client_id}" if self.client_id else "Client ID: None"
         return (f"{client_id_display}, Surname: {self.surname}, First Name: {self.first_name}, "
                 f"Patronymic: {self.patronymic}, Email: {self.email}, Phone: {self.phone_number}, "
