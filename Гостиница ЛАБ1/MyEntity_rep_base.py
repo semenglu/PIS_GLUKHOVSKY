@@ -1,70 +1,68 @@
 import json
 import yaml
+import uuid
 from abc import ABC, abstractmethod
 
 
-
-class StudentRepBase(ABC):
-    """Базовый класс для репозиториев с общей логикой работы с данными."""
+class MyEntityRepBase(ABC):
+    """Базовый класс для репозиториев, работающих с данными (общая логика)"""
     
-    def __init__(self, file_path: str, strategy):
-        self.file_path = file_path
-        self.strategy = strategy
-        self.data = self.strategy.load(self.file_path)
+    def __init__(self, filename: str):
+        self.filename = filename
+        self.data = self._load_data()
 
-    def load_data(self):
-        """Загрузка данных из файла."""
-        self.data = self.strategy.load(self.file_path)
+    @abstractmethod
+    def _load_data(self):
+        """Загружает данные из файла"""
+        pass
 
-    def save_data(self):
-        """Сохранение данных в файл."""
-        self.strategy.save(self.file_path, self.data)
+    @abstractmethod
+    def _save_data(self):
+        """Сохраняет данные в файл"""
+        pass
 
-    def get_all(self) -> list:
-        """Получить все объекты."""
+    def read_all(self):
+        """Чтение всех значений из файла"""
         return self.data
 
-    def get_by_id(self, student_id: int) -> dict:
-        """Получить объект по ID."""
-        for student in self.data:
-            if student.get("id") == student_id:
-                return student
-        raise ValueError(f"Объект с ID {student_id} не найден.")
+    def write_all(self):
+        """Запись всех значений в файл"""
+        self._save_data()
 
-    def add_student(self, student: dict):
-        """Добавить объект в репозиторий."""
-        new_id = max((item.get("id", 0) for item in self.data), default=0) + 1
-        student["id"] = new_id
-        self.data.append(student)
-        self.save_data()
+    def get_by_id(self, client_id):
+        """Получить объект по ID"""
+        return next((entity for entity in self.data if entity.client_id == client_id), None)
 
-    def delete_by_id(self, student_id: int):
-        """Удалить объект по ID."""
-        self.data = [student for student in self.data if student.get("id") != student_id]
-        self.save_data()
+    def get_k_n_short_list(self, k, n):
+        """Получить список k по счету n объектов (например, вторые 20 элементов)"""
+        return self.data[(n - 1) * k:n * k]
 
-    def replace_by_id(self, student_id: int, updates: dict):
-        """Заменить объект по ID."""
-        student = self.get_by_id(student_id)
-        valid_keys = {"id", "first_name", "last_name", "patronymic", "phone", "address"}
-        updates = {k: v for k, v in updates.items() if k in valid_keys}
-        student.update(updates)
-        self.save_data()
+    def sort_by_field(self, field_name):
+        """Сортировка элементов по выбранному полю"""
+        if not hasattr(MyEntity, field_name):
+            raise ValueError(f"Поле '{field_name}' не существует в сущности")
+        self.data.sort(key=lambda entity: getattr(entity, field_name))
 
-    def get_k_n_short_list(self, k: int, n: int) -> list:
-        """Получить k по счету n объектов."""
-        start_index = (n - 1) * k
-        end_index = start_index + k
-        return self.data[start_index:end_index]
+    def add_entity(self, entity):
+        """Добавить объект в список (сформировать новый ID)"""
+        entity.client_id = uuid.uuid4().int  # Генерация уникального ID
+        self.data.append(entity)
+        self._save_data()
 
-    def sort_by_field(self, field: str, reverse: bool = False) -> List[Dict]:
-        """Сортировать данные по указанному полю."""
-        if not self.data or field not in self.data[0]:
-            raise ValueError(f"Invalid field '{field}' for sorting.")
-        self.data.sort(key=lambda x: x.get(field), reverse=reverse)
-        return self.data
+    def replace_entity(self, client_id, new_entity):
+        """Заменить элемент списка по ID"""
+        index = next((index for index, entity in enumerate(self.data) if entity.client_id == client_id), None)
+        if index is not None:
+            self.data[index] = new_entity
+            self._save_data()
+        else:
+            raise ValueError(f"Элемент с ID {client_id} не найден")
 
-    def get_count(self) -> int:
-        """Получить количество объектов."""
+    def delete_entity(self, client_id):
+        """Удалить элемент списка по ID"""
+        self.data = [entity for entity in self.data if entity.client_id != client_id]
+        self._save_data()
+
+    def get_count(self):
+        """Получить количество элементов"""
         return len(self.data)
-
