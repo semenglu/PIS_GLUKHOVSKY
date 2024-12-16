@@ -1,4 +1,4 @@
-class MyEntityRepJson(MyEntityRepBase):
+class ClientRepJson(ClientRepBase):
     """Класс для работы с данными в формате JSON"""
 
     def _load_data(self):

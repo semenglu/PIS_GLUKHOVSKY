@@ -4,7 +4,7 @@ from Product import Product
 from DBconnection import DBConnection
 
 
-class MyEntityRepDB:
+class ClientRepDB:
     def __init__(self, db_connection):
         """Инициализация класса с подключением к базе данных"""
         self.db_connection = db_connection  # передаем объект подключения

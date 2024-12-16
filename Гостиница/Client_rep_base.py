@@ -4,7 +4,7 @@ import uuid
 from abc import ABC, abstractmethod
 
 
-class MyEntityRepBase(ABC):
+class ClientRepBase(ABC):
     """Базовый класс для репозиториев, работающих с данными (общая логика)"""
     
     def __init__(self, filename: str):
