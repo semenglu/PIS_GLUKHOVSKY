@@ -6,12 +6,10 @@ from DBconnection import DBConnection
 
 class ClientRepDB:
     def __init__(self, db_connection):
-        """Инициализация класса с подключением к базе данных"""
         self.db_connection = db_connection  # передаем объект подключения
         self.data = self._load_data()  # загружаем все данные из базы при инициализации
 
     def _load_data(self):
-        """Загружает все данные из базы данных (чтение всех значений)"""
         with self.db_connection.cursor(pymysql.cursors.DictCursor) as cursor:
             sql = "SELECT * FROM my_entity"  # замените 'my_entity' на название вашей таблицы
             cursor.execute(sql)
@@ -30,19 +28,15 @@ class ClientRepDB:
             ]
 
     def _save_data(self):
-        """Обновляет все данные в базе данных (запись всех значений)"""
         pass  # Этот метод можно использовать для обновлений, если нужно
 
     def read_all(self):
-        """Чтение всех значений из базы"""
         return self.data
 
     def write_all(self):
-        """Запись всех значений в базу"""
         self._save_data()
 
     def get_by_id(self, client_id):
-        """Получить объект по ID"""
         with self.db_connection.cursor(pymysql.cursors.DictCursor) as cursor:
             sql = "SELECT * FROM my_entity WHERE client_id = %s"  # Замените на вашу таблицу
             cursor.execute(sql, (client_id,))
@@ -61,7 +55,6 @@ class ClientRepDB:
             return None
 
     def get_k_n_short_list(self, k, n):
-        """Получить список k по счету n объектов"""
         offset = (n - 1) * k
         with self.db_connection.cursor(pymysql.cursors.DictCursor) as cursor:
             sql = "SELECT * FROM my_entity LIMIT %s OFFSET %s"  # Пагинация
@@ -81,7 +74,6 @@ class ClientRepDB:
             ]
 
     def sort_by_field(self, field_name, ascending=True):
-        """Сортировка элементов по выбранному полю"""
         with self.db_connection.cursor(pymysql.cursors.DictCursor) as cursor:
             sql = f"SELECT * FROM my_entity ORDER BY {field_name} {'ASC' if ascending else 'DESC'}"
             cursor.execute(sql)
@@ -100,7 +92,6 @@ class ClientRepDB:
             ]
 
     def add_entity(self, entity):
-        """Добавить объект в базу данных"""
         entity.client_id = uuid.uuid4().int  # Генерация уникального ID
         with self.db_connection.cursor() as cursor:
             sql = """
@@ -121,7 +112,6 @@ class ClientRepDB:
             return entity.client_id
 
     def replace_entity(self, client_id, new_entity):
-        """Заменить элемент по ID"""
         with self.db_connection.cursor() as cursor:
             sql = """
                 UPDATE my_entity
@@ -143,7 +133,6 @@ class ClientRepDB:
             return cursor.rowcount > 0
 
     def delete_entity(self, client_id):
-        """Удалить объект по ID"""
         with self.db_connection.cursor() as cursor:
             sql = "DELETE FROM my_entity WHERE client_id = %s"
             cursor.execute(sql, (client_id,))
@@ -151,7 +140,6 @@ class ClientRepDB:
             return cursor.rowcount > 0
 
     def get_count(self):
-        """Получить количество объектов в базе"""
         with self.db_connection.cursor() as cursor:
             sql = "SELECT COUNT(*) AS count FROM my_entity"
             cursor.execute(sql)
@@ -159,5 +147,4 @@ class ClientRepDB:
             return result['count'] if result else 0
 
     def close(self):
-        """Закрытие соединения с базой данных"""
         self.db_connection.close()

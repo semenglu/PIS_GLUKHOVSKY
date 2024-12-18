@@ -2,7 +2,6 @@ import yaml
 
 
 class ClientRepYaml(ClientStrategy):
-    """Стратегия для работы с YAML."""
 
     def load(self, file_path: str) -> List[dict]:
         try:
