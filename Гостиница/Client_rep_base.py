@@ -6,23 +6,29 @@ from abc import ABC, abstractmethod
 
 class ClientRepBase(ABC):
     
-    def __init__(self, filename: str):
-        self.filename = filename
-        self.data = self._load_data()
+    def __init__(self, file_path: str, strategy: StudentStrategy):
+        self.file_path = file_path
+
+    def __init__(self, strategy: StudentStrategy):
+        self._data = []
+        self.strategy = strategy
+        self.data = self.strategy.load(self.file_path)
+        self.load_data()
 
     @abstractmethod
     def _load_data(self):
-        pass
+        self.strategy.load(self.data)
 
     @abstractmethod
     def _save_data(self):
-        pass
+        self.data = self.strategy.save()
 
     def read_all(self):
         return self.data
 
-    def write_all(self):
-        self._save_data()
+
+    def get_all(self) -> list:
+        return self.data
 
     def get_by_id(self, client_id):
         return next((entity for entity in self.data if entity.client_id == client_id), None)
