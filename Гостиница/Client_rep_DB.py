@@ -5,9 +5,8 @@ from DBconnection import DBConnection
 
 
 class ClientRepDB:
-    def __init__(self, db_connection):
-        self.db_connection = db_connection  # передаем объект подключения
-        self.data = self._load_data()  # загружаем все данные из базы при инициализации
+    def __init__(self, host, user, password, database, port=3306):
+        self.db_connection = DBConnection(host, user, password, database, port)
 
     def _load_data(self):
         with self.db_connection.cursor(pymysql.cursors.DictCursor) as cursor:
