@@ -1,7 +1,7 @@
 import pymysql
 
 class DBConnection:
-    _instance = None  # Статическая переменная для хранения единственного экземпляра
+    _instance = None  
 
     def __new__(cls, host='localhost', user='root', password='', db='my_database'):
         if not cls._instance:

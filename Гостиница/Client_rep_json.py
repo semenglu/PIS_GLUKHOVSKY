@@ -1,12 +1,21 @@
-class ClientRepJson(ClientRepBase):
+import json
+import os
 
-    def _load_data(self):
+
+class ClientRepJson(ClientStrategy):
+
+    def load(self, file_path: str) -> List[dict]:
         try:
-            with open(self.filename, "r", encoding="utf-8") as file:
-                return [MyEntity.from_dict(item) for item in json.load(file)]
-        except (FileNotFoundError, json.JSONDecodeError):
+            with open(file_path, 'r') as file:
+                return json.load(file)
+        except FileNotFoundError:
             return []
 
-    def _save_data(self):
-        with open(self.filename, "w", encoding="utf-8") as file:
-            json.dump([entity.to_dict() for entity in self.data], file, ensure_ascii=False, indent=4)
+    def save(self, file_path: str, data: List[dict]):
+        with open(file_path, 'w') as file:
+            json.dump(data, file, indent=4)
+
+    def display(self, file_path: str):
+       data = self.load(file_path)
+       for item in data:
+            print(item)

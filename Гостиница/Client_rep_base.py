@@ -6,38 +6,32 @@ from abc import ABC, abstractmethod
 
 class ClientRepBase(ABC):
     
-    def __init__(self, file_path: str, strategy: StudentStrategy):
-        self.file_path = file_path
 
     def __init__(self, strategy: StudentStrategy):
         self._data = []
         self.strategy = strategy
-        self.data = self.strategy.load(self.file_path)
         self.load_data()
 
-    @abstractmethod
-    def _load_data(self):
+    def load(self):
         self.strategy.load(self.data)
 
-    @abstractmethod
-    def _save_data(self):
+    def save(self):
         self.data = self.strategy.save()
-
-    def read_all(self):
-        return self.data
-
 
     def get_all(self) -> list:
         return self.data
 
-    def get_by_id(self, client_id):
-        return next((entity for entity in self.data if entity.client_id == client_id), None)
+    def get_by_id(self, client_id: int) -> dict:
+            for client in self.data:
+                if client.get("id") == client_id:
+                    return client
+            raise ValueError(f"Объект с ID {client_id} не найден.")
 
     def get_k_n_short_list(self, k, n):
         return self.data[(n - 1) * k:n * k]
 
     def sort_by_field(self, field_name):
-        if not hasattr(MyEntity, field_name):
+        if not hasattr(ClientRepBase, field_name):
             raise ValueError(f"Поле '{field_name}' не существует в сущности")
         self.data.sort(key=lambda entity: getattr(entity, field_name))
 
@@ -54,17 +48,33 @@ class ClientRepBase(ABC):
                  raise ValueError(f"Клиент уже существует.")
         return True
 
-    def replace_entity(self, client_id, new_entity):
-        index = next((index for index, entity in enumerate(self.data) if entity.client_id == client_id), None)
-        if index is not None:
-            self.data[index] = new_entity
-            self._save_data()
-        else:
-            raise ValueError(f"Элемент с ID {client_id} не найден")
+    def replace_by_id(self, client_id: int, first_name=None, last_name=None, patronymic=None, phone=None):
+        client = self.get_by_id(client_id)
+        if not client:
+            raise ValueError(f"Клиент с ID {student_id} не найден.")
+        Сlients = [Client.create_from_dict(client) for client in self._data]
+        if not self.check_unique_code(client, clients):
+            raise ValueError(f"Клиент уже существует.")
+        if first_name:
+            client.first_name = first_name
+        if last_name:
+            client.last_name = last_name
+        if patronymic:
+            client.patronymic = patronymic
+        if phone:
+            client.phone = phone
+
+        for i, p in enumerate(self.data):
+            if p['client_id'] == client_id:
+                self.data[i] = client.to_dict()
+                break
+        
 
     def delete_entity(self, client_id):
-        self.data = [entity for entity in self.data if entity.client_id != client_id]
-        self._save_data()
+        client = self.get_by_id(client)
+        if not client:
+            raise ValueError(f"Клиент с ID {client_id} не найден.")
+        self.data = [p for p in self.data if p['client_id'] != client_id]
 
     def get_count(self):
         return len(self.data)

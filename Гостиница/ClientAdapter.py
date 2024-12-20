@@ -1,4 +1,6 @@
 from ClientRepBase import  ClientRepBase
+
+
 class ClientAdapter:
 
     def __init__(self, client_rep_base: ClientRepBase):
