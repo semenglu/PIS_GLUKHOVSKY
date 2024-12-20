@@ -1,80 +1,73 @@
 import json
 import yaml
-import uuid
-from abc import ABC, abstractmethod
 
 
-class ClientRepBase(ABC):
-    
 
-    def __init__(self, strategy: StudentStrategy):
-        self._data = []
-        self.strategy = strategy
-        self.load_data()
+class ClientRepBase:
+    def __init__(self, filename):
+        self.filename = filename
+        self.entities = self._read_from_file()
 
-    def load(self):
-        self.strategy.load(self.data)
+    def get_all(self):
+        return self.clients
 
-    def save(self):
-        self.data = self.strategy.save()
+    def get_by_id(self, client_id):
+        for client in self.clients:
+            if client.client_id == client_id:
+                return client
+        return None
 
-    def get_all(self) -> list:
-        return self.data
-
-    def get_by_id(self, client_id: int) -> dict:
-            for client in self.data:
-                if client.get("id") == client_id:
-                    return client
-            raise ValueError(f"Объект с ID {client_id} не найден.")
-
-    def get_k_n_short_list(self, k, n):
-        return self.data[(n - 1) * k:n * k]
+    def get_k_n_short_list(self, n, k):
+        start_index = n * (k - 1)
+        end_index = start_index + n
+        return self.clients[start_index:end_index]
 
     def sort_by_field(self, field_name):
-        if not hasattr(ClientRepBase, field_name):
-            raise ValueError(f"Поле '{field_name}' не существует в сущности")
-        self.data.sort(key=lambda entity: getattr(entity, field_name))
+        def get_field_value(client):
+            if hasattr(client, field_name):
+                return getattr(client, field_name)
+            return None
 
-    def add_student(self, client: Client):
-        client_dict = client.to_dict()
-        clients = [Client.create_from_dict(client) for client in self.data]
-        if not self.check_unique_code(client, clients):
-            raise ValueError(f"Клиент уже существует.")
-        self.data.append(client_dict)
+        self.clients.sort(key=get_field_value)
+        self._write_to_file()
 
-    def check_unique_code(self, client, clients):
-        for client_data in clients:
-            if client_data == client:
-                 raise ValueError(f"Клиент уже существует.")
-        return True
+    def is_client_exist_by_passport(self, passport_number):
+        for client in self.clients:
+            if client.passport_number == passport_number:
+                return True
+        return False
 
-    def replace_by_id(self, client_id: int, first_name=None, last_name=None, patronymic=None, phone=None):
+    def add_client(self, surname, first_name, patronymic, email, phone_number, passport_number, comment):
+        if self.is_client_exist_by_passport(passport_number):
+            raise ValueError(f"Клиент с паспортным номером {passport_number} уже существует")
+
+        max_id = 0
+        for client in self.clients:
+            if client.client_id is not None and client.client_id > max_id:
+                max_id = client.client_id
+        new_id = max_id + 1
+
+        new_client = FullClient(new_id, surname, first_name, patronymic, email, phone_number, passport_number, comment)
+        self.clients.append(new_client)
+        self._write_to_file()
+
+    def update_client_by_id(self, client_id, **kwargs):
         client = self.get_by_id(client_id)
-        if not client:
-            raise ValueError(f"Клиент с ID {student_id} не найден.")
-        Сlients = [Client.create_from_dict(client) for client in self._data]
-        if not self.check_unique_code(client, clients):
-            raise ValueError(f"Клиент уже существует.")
-        if first_name:
-            client.first_name = first_name
-        if last_name:
-            client.last_name = last_name
-        if patronymic:
-            client.patronymic = patronymic
-        if phone:
-            client.phone = phone
+        if client is not None:
+            for key, value in kwargs.items():
+                if hasattr(client, key):
+                    setattr(client, key, value)
+            self._write_to_file()
+        else:
+            raise ValueError(f"Клиент с ID {client_id} не найден")
 
-        for i, p in enumerate(self.data):
-            if p['client_id'] == client_id:
-                self.data[i] = client.to_dict()
-                break
-        
-
-    def delete_entity(self, client_id):
-        client = self.get_by_id(client)
-        if not client:
-            raise ValueError(f"Клиент с ID {client_id} не найден.")
-        self.data = [p for p in self.data if p['client_id'] != client_id]
+    def delete_client_by_id(self, client_id):
+        updated_clients = []
+        for client in self.clients:
+            if client.client_id != client_id:
+                updated_clients.append(client)
+        self.clients = updated_clients
+        self._write_to_file()
 
     def get_count(self):
-        return len(self.data)
+        count = 0
