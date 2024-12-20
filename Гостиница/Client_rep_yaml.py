@@ -4,15 +4,16 @@ import yaml
 class Client_rep_yaml:
     def __init__(self, filename):
         self.filename = filename
-        self.entities = self._read_from_file()
+        self.clients = self._read_from_file()
 
     def _read_from_file(self):
         try:
             with open(self.filename, "r") as file:
                 data = yaml.safe_load(file) or []
-                entities_list = [
-                    FullEntity(
-                        entity_id=item["entity_id"],
+                clients_list = []
+                for item in data:
+                    client = FullClient(
+                        client_id=item["client_id"],
                         surname=item["surname"],
                         first_name=item["first_name"],
                         patronymic=item["patronymic"],
@@ -21,9 +22,8 @@ class Client_rep_yaml:
                         passport_number=item["passport_number"],
                         comment=item["comment"],
                     )
-                    for item in data
-                ]
-                return entities_list
+                    clients_list.append(client)
+                return clients_list
         except FileNotFoundError:
             return [] 
         except yaml.YAMLError:
