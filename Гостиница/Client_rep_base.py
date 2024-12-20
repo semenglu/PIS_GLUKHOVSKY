@@ -71,4 +71,4 @@ class ClientRepBase:
         self._write_to_file()
 
     def get_count(self):
-        count = 0
+        return len(self.clients)
