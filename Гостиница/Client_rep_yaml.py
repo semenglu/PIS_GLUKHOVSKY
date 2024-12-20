@@ -1,7 +1,7 @@
 import yaml
 
 
-class Client_rep_yaml(ClientRepBase):
+class YamlStrategy(ClientStrategy):
     def __init__(self, filename):
         self.filename = filename
         self.clients = self._read_from_file()

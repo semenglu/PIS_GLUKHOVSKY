@@ -4,8 +4,9 @@ import yaml
 
 
 class ClientRepBase:
-    def __init__(self, filename):
+    def __init__(self, filename, strategy: ClientStrategy):
         self.filename = filename
+        self.strategy = strategy
         self.entities = self._read_from_file()
 
     def get_all(self):
