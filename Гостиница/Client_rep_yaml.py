@@ -1,23 +1,113 @@
 import yaml
 
 
-class ClientRepYaml(ClientStrategy):
+class Client_rep_yaml:
+    def __init__(self, filename):
+        self.filename = filename
+        self.entities = self._read_from_file()
 
-    def load(self, file_path: str) -> List[dict]:
+    def _read_from_file(self):
         try:
-            with open(file_path, 'r') as file:
-                return yaml.safe_load(file) or []
+            with open(self.filename, "r") as file:
+                data = yaml.safe_load(file) or []
+                entities_list = [
+                    FullEntity(
+                        entity_id=item["entity_id"],
+                        surname=item["surname"],
+                        first_name=item["first_name"],
+                        patronymic=item["patronymic"],
+                        email=item["email"],
+                        phone_number=item["phone_number"],
+                        passport_number=item["passport_number"],
+                        comment=item["comment"],
+                    )
+                    for item in data
+                ]
+                return entities_list
         except FileNotFoundError:
+            return [] 
+        except yaml.YAMLError:
             return []
 
-    def save(self, file_path: str, data: List[dict]):
-        with open(file_path, 'w') as file:
-            yaml.safe_dump(data, file, default_flow_style=False)
+    def _write_to_file(self):
+        data_to_write = [
+            {
+                "entity_id": entity.entity_id,
+                "surname": entity.surname,
+                "first_name": entity.first_name,
+                "patronymic": entity.patronymic,
+                "email": entity.email,
+                "phone_number": entity.phone_number,
+                "passport_number": entity.passport_number,
+                "comment": entity.comment,
+            }
+            for entity in self.entities
+        ]
 
-    def display(self, file_path: str):
-        data = self.load(file_path)
-        for item in data:
-            print(item)
+        with open(self.filename, "w") as file:
+            yaml.safe_dump(data_to_write, file, allow_unicode=True)
 
-strategy=ClientRepYaml('client.yaml')
-strategy.display()
+    def get_all(self):
+        return self.entities
+
+    def get_by_id(self, client_id):
+        for client in self.clients:
+            if client.client_id == client_id:
+                return client
+        return None
+
+    def get_k_n_short_list(self, n, k):
+        start_index = n * (k - 1)
+        end_index = start_index + n
+        return self.entities[start_index:end_index]
+
+    def sort_by_field(self, field_name):
+        def get_field_value(client):
+            if hasattr(client, field_name):
+                return getattr(client, field_name)
+            return None
+
+        self.clients.sort(key=get_field_value)
+        self._write_to_file()
+
+    def is_client_exist_by_passport(self, passport_number):
+        for client in self.clients:
+            if client.passport_number == passport_number:
+                return True
+        return False
+
+
+    def add_client(self, surname, first_name, patronymic, email, phone_number, passport_number, comment):
+        if self.is_client_exist_by_passport(passport_number):
+            raise ValueError(f"Клиент с паспортным номером {passport_number} уже существует")
+
+        max_id = 0
+        for client in self.clients:
+            if client.client_id is not None and client.client_id > max_id:
+                max_id = client.client_id
+        new_id = max_id + 1
+
+        new_client = FullClient(new_id, surname, first_name, patronymic, email, phone_number, passport_number, comment)
+        self.clients.append(new_client)
+        self._write_to_file()
+
+    def update_client_by_id(self, client_id, **kwargs):
+        client = self.get_by_id(client_id)
+        if client is not None:
+            for key, value in kwargs.items():
+                if hasattr(client, key):
+                    setattr(client, key, value)
+            self._write_to_file()
+        else:
+            raise ValueError(f"Клиент с ID {client_id} не найден")
+
+    def delete_client_by_id(self, client_id):
+        updated_clients = []
+        for client in self.clients:
+            if client.client_id != client_id:
+                updated_clients.append(client)
+        self.clients = updated_clients
+        self._write_to_file()
+
+    def get_count(self):
+        count = 0
