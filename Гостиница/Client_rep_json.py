@@ -1,4 +1,6 @@
 import json
+
+from BaseClient import FullClient
 from ClientStrategy import ClientStrategy
 
 class ClientRepJson(ClientStrategy):

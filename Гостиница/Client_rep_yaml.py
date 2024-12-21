@@ -1,4 +1,6 @@
 import yaml
+
+from BaseClient import FullClient
 from ClientStrategy import ClientStrategy
 
 class ClientRepYaml(ClientStrategy):

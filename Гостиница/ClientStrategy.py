@@ -1,17 +1,11 @@
+import os
 from abc import ABC, abstractmethod
-from typing import List
-
 
 class ClientStrategy(ABC):
-
     @abstractmethod
-    def load(self, file_path: str) -> List[dict]:
+    def _read_from_file(self, filename):
         pass
 
     @abstractmethod
-    def save(self, file_path: str, data: List[dict]):
-        pass
-
-    @abstractmethod
-    def display(self):
+    def _write_to_file(self, filename, clients):
         pass
