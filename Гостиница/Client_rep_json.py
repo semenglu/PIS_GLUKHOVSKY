@@ -1,5 +1,5 @@
 import json
-
+from ClientStrategy import ClientStrategy
 
 class ClientRepJson(ClientStrategy):
     def __init__(self, filename):

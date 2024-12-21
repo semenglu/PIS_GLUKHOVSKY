@@ -1,5 +1,5 @@
 import yaml
-
+from ClientStrategy import ClientStrategy
 
 class ClientRepYaml(ClientStrategy):
     def __init__(self, filename):
