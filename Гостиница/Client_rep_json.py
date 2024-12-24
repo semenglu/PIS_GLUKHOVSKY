@@ -1,5 +1,4 @@
 import json
-
 from BaseClient import FullClient
 from ClientStrategy import ClientStrategy
 
@@ -10,7 +9,7 @@ class ClientRepJson(ClientStrategy):
 
     def _read_from_file(self):
         try:
-            with open(self.filename, "r") as file:
+            with open(self.filename, "r", encoding="utf-8") as file:
                 data = json.load(file)
                 clients_list = []
                 for item in data:
@@ -27,8 +26,12 @@ class ClientRepJson(ClientStrategy):
                     clients_list.append(client)
                 return clients_list
         except FileNotFoundError:
+            with open(self.filename, "w", encoding="utf-8") as file:
+                json.dump([], file, ensure_ascii=False, indent=4)
             return []
         except json.JSONDecodeError:
+            with open(self.filename, "w", encoding="utf-8") as file:
+                json.dump([], file, ensure_ascii=False, indent=4)
             return []
 
     def _write_to_file(self):
@@ -46,6 +49,12 @@ class ClientRepJson(ClientStrategy):
             }
             data_to_write.append(client_data)
 
-        with open(self.filename, "w") as file:
-            json.dump(data_to_write, file)
+        with open(self.filename, "w", encoding="utf-8") as file:
+            json.dump(data_to_write, file, ensure_ascii=False, indent=4)
 
+            # Логируем, что собираемся записать
+        print("Запись данных в файл:")
+        print(data_to_write)
+
+        # Логируем успешную запись
+        print(f"Данные успешно записаны в {self.filename}")

@@ -10,7 +10,20 @@ class ClientRepBase:
     def __init__(self, filename, strategy: ClientStrategy):
         self.filename = filename
         self.strategy = strategy
-        self.entities = self._read_from_file()
+        self.clients = self._read_from_file()
+
+    def _read_from_file(self):
+        if isinstance(self.strategy, ClientRepJson):
+            return self.strategy._read_from_file()
+        elif isinstance(self.strategy, ClientRepYaml):
+            return self.strategy._read_from_file()
+        return []
+
+    def _write_to_file(self):
+        if isinstance(self.strategy, ClientRepJson):
+            self.strategy._write_to_file()
+        elif isinstance(self.strategy, ClientRepYaml):
+            self.strategy._write_to_file()
 
     def get_all(self):
         return self.clients
@@ -53,6 +66,7 @@ class ClientRepBase:
 
         new_client = FullClient(new_id, surname, first_name, patronymic, email, phone_number, passport_number, comment)
         self.clients.append(new_client)
+        self.strategy.clients = self.clients
         self._write_to_file()
 
     def update_client_by_id(self, client_id, **kwargs):
@@ -76,8 +90,8 @@ class ClientRepBase:
     def get_count(self):
         return len(self.clients)
 
+    @staticmethod
     def convert_data(input_filename, output_filename, input_strategy_class, output_strategy_class):
-
         input_repository = input_strategy_class(input_filename)
         clients = input_repository.clients
 
@@ -87,9 +101,68 @@ class ClientRepBase:
 
         print(f"Данные успешно сконвертированы из {input_filename} в {output_filename}.")
 
-    if __name__ == "__main__":
-        input_json_file = "test.json"
-        output_yaml_file = "output.yaml"
 
-        convert_data(input_json_file, output_yaml_file, ClientRepJson, ClientRepYaml)
+if __name__ == "__main__":
+    input_json_file = "test.json"
+    output_yaml_file = "output.yaml"
+    # Экземпляры JSON и YAML репозиториев
+    json_repository = ClientRepJson(input_json_file)
+    yaml_repository = ClientRepYaml(output_yaml_file)
+
+    # Создаем объект ClientRepBase для работы с JSON
+    json_base = ClientRepBase(input_json_file, json_repository)
+
+    json_base.add_client(
+        surname="Иванов",
+        first_name="Иван",
+        patronymic="Иванович",
+        email="ivanov@example.com",
+        phone_number="1234567890",
+        passport_number="123456789",
+        comment="Пример клиента"
+    )
+    json_base.add_client(
+        surname="Петров",
+        first_name="Петр",
+        patronymic="Петрович",
+        email="petrov@example.com",
+        phone_number="0987654321",
+        passport_number="987654321",
+        comment="Второй клиент"
+    )
+
+
+    for client in json_base.get_all():
+        print(f"Client ID: {client.client_id}, Surname: {client.surname}, First Name: {client.first_name}")
+
+    print("\nСортировка по фамилии:")
+    json_base.sort_by_field("surname")
+    for client in json_base.get_all():
+        print(f"Client ID: {client.client_id}, Surname: {client.surname}")
+
+    print("\nУдаление клиента с ID 1:")
+    json_base.delete_client_by_id(1)
+    for client in json_base.get_all():
+        print(f"Client ID: {client.client_id}, Surname: {client.surname}")
+
+    print("\nОбновление клиента с ID 2:")
+    json_base.update_client_by_id(2, phone_number="5555555555")
+    print(json_base.get_by_id(2))
+
+    print("\nСписок клиентов (2 первых записи):")
+    short_list = json_base.get_k_n_short_list(2, 1)
+    for client in short_list:
+        print(f"Client ID: {client.client_id}, Surname: {client.surname}")
+
+
+    print(f"\nКоличество клиентов: {json_base.get_count()}")
+
+
+    print(json_base.is_client_exist_by_passport("123456789"))
+
+    ClientRepBase.convert_data(input_json_file, output_yaml_file, ClientRepJson, ClientRepYaml)
+
+
+
+
 

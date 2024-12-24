@@ -1,22 +1,22 @@
 [
     {
         "client_id": 1,
-        "surname": "Ivanov",
-        "first_name": "Ivan",
-        "patronymic": "Ivanovich",
-        "email": "dfadfd@mail.ru",
-        "phone_number": "+123456789",
-        "passport_number": "AA123456",
-        "comment": "dfdfd"
+        "surname": "Иванов",
+        "first_name": "Иван",
+        "patronymic": "Иванович",
+        "email": "ivanov@example.com",
+        "phone_number": "1234567890",
+        "passport_number": "123456789",
+        "comment": "Пример клиента"
     },
     {
         "client_id": 2,
-        "surname": "Petrova",
-        "first_name": "Anna",
-        "patronymic": "Sergeevna",
-        "email": "dfadfd@mail.ru",
-        "phone_number": "+987654321",
-        "passport_number": "BB654321",
-        "comment": "dfddfdf"
+        "surname": "Петров",
+        "first_name": "Петр",
+        "patronymic": "Петрович",
+        "email": "petrov@example.com",
+        "phone_number": "5555555555",
+        "passport_number": "987654321",
+        "comment": "Второй клиент"
     }
 ]
