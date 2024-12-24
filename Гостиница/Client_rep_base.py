@@ -3,7 +3,8 @@ import yaml
 
 from BaseClient import FullClient
 from ClientStrategy import ClientStrategy
-
+from Client_rep_json import ClientRepJson
+from Client_rep_yaml import ClientRepYaml
 
 class ClientRepBase:
     def __init__(self, filename, strategy: ClientStrategy):
@@ -74,3 +75,18 @@ class ClientRepBase:
 
     def get_count(self):
         return len(self.clients)
+
+    def convert_json_to_yaml(input_json_filename, output_yaml_filename):
+        json_repository = ClientRepJson(input_json_filename)
+        clients = json_repository.clients
+        yaml_repository = ClientRepYaml(output_yaml_filename)
+        yaml_repository.clients = clients
+        yaml_repository._write_to_file()
+        print(f"Данные успешно сконвертированы из {input_json_filename} в {output_yaml_filename}.")
+
+    if __name__ == "__main__":
+        input_json_file = "test.json"
+        output_yaml_file = "output.yaml"
+
+
+        convert_json_to_yaml(input_json_file, output_yaml_file)

@@ -34,16 +34,16 @@ class ClientRepYaml(ClientStrategy):
     def _write_to_file(self):
         data_to_write = [
             {
-                "entity_id": entity.entity_id,
-                "surname": entity.surname,
-                "first_name": entity.first_name,
-                "patronymic": entity.patronymic,
-                "email": entity.email,
-                "phone_number": entity.phone_number,
-                "passport_number": entity.passport_number,
-                "comment": entity.comment,
+                "client_id": client.client_id,
+                "surname": client.surname,
+                "first_name": client.first_name,
+                "patronymic": client.patronymic,
+                "email": client.email,
+                "phone_number": client.phone_number,
+                "passport_number": client.passport_number,
+                "comment": client.comment,
             }
-            for entity in self.entities
+            for client in self.clients
         ]
 
         with open(self.filename, "w") as file:

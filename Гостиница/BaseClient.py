@@ -247,6 +247,6 @@ try:
     full_client = FullClient(surname="Ivanov", first_name="Ivan", patronymic="Petrovich",
                              email="ivanov@example.com", phone_number="+1234567890",
                              passport_number="11212121", comment="Valid comment")
-    print(full_client.display())
+    print(full_client)
 except ValueError as e:
     print(f"Ошибка валидации: {e}")

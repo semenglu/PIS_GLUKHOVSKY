@@ -1,0 +1,16 @@
+- client_id: 1
+  comment: dfdfd
+  email: dfadfd@mail.ru
+  first_name: Ivan
+  passport_number: AA123456
+  patronymic: Ivanovich
+  phone_number: '+123456789'
+  surname: Ivanov
+- client_id: 2
+  comment: dfddfdf
+  email: dfadfd@mail.ru
+  first_name: Anna
+  passport_number: BB654321
+  patronymic: Sergeevna
+  phone_number: '+987654321'
+  surname: Petrova
