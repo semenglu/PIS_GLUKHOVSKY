@@ -84,9 +84,19 @@ class ClientRepBase:
         yaml_repository._write_to_file()
         print(f"Данные успешно сконвертированы из {input_json_filename} в {output_yaml_filename}.")
 
+    def convert_yaml_to_json(input_yaml_filename, output_json_filename):
+
+        yaml_repository = ClientRepYaml(input_yaml_filename)
+        clients = yaml_repository.clients
+        json_repository = ClientRepJson(output_json_filename)
+        json_repository.clients = clients
+        json_repository._write_to_file()
+        print(f"Данные успешно сконвертированы из {input_yaml_filename} в {output_json_filename}.")
+
     if __name__ == "__main__":
         input_json_file = "test.json"
         output_yaml_file = "output.yaml"
 
 
         convert_json_to_yaml(input_json_file, output_yaml_file)
+
