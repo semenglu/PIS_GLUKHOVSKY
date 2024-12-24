@@ -76,27 +76,20 @@ class ClientRepBase:
     def get_count(self):
         return len(self.clients)
 
-    def convert_json_to_yaml(input_json_filename, output_yaml_filename):
-        json_repository = ClientRepJson(input_json_filename)
-        clients = json_repository.clients
-        yaml_repository = ClientRepYaml(output_yaml_filename)
-        yaml_repository.clients = clients
-        yaml_repository._write_to_file()
-        print(f"Данные успешно сконвертированы из {input_json_filename} в {output_yaml_filename}.")
+    def convert_data(input_filename, output_filename, input_strategy_class, output_strategy_class):
 
-    def convert_yaml_to_json(input_yaml_filename, output_json_filename):
+        input_repository = input_strategy_class(input_filename)
+        clients = input_repository.clients
 
-        yaml_repository = ClientRepYaml(input_yaml_filename)
-        clients = yaml_repository.clients
-        json_repository = ClientRepJson(output_json_filename)
-        json_repository.clients = clients
-        json_repository._write_to_file()
-        print(f"Данные успешно сконвертированы из {input_yaml_filename} в {output_json_filename}.")
+        output_repository = output_strategy_class(output_filename)
+        output_repository.clients = clients
+        output_repository._write_to_file()
+
+        print(f"Данные успешно сконвертированы из {input_filename} в {output_filename}.")
 
     if __name__ == "__main__":
         input_json_file = "test.json"
         output_yaml_file = "output.yaml"
 
-
-        convert_json_to_yaml(input_json_file, output_yaml_file)
+        convert_data(input_json_file, output_yaml_file, ClientRepJson, ClientRepYaml)
 
