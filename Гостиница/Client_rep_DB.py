@@ -1,14 +1,11 @@
 import pymysql
 
+from DBconnection import DatabaseConnection
+
+
 class ClientRepDB:
-    def __init__(self, host, user, password, database):
-        self.connection = pymysql.connect(
-            host=host,
-            user=user,
-            password=password,
-            database=database,
-            cursorclass=pymysql.cursors.DictCursor
-        )
+    def __init__(self, db_connection):
+        self.connection = db_connection
 
     def get_by_id(self, client_id):
         with self.connection.cursor() as cursor:
@@ -43,9 +40,10 @@ class ClientRepDB:
         if phone:
             query += "phone = %s, "
             params.append(phone)
-        # Убираем последнюю запятую
+
         query = query.rstrip(', ') + " WHERE id = %s"
         params.append(client_id)
+
         with self.connection.cursor() as cursor:
             cursor.execute(query, tuple(params))
             self.connection.commit()
@@ -63,20 +61,22 @@ class ClientRepDB:
             result = cursor.fetchone()
             return result['count']
 
-    def __del__(self):
-        self.connection.close()
 
-
+# ▎Использование в главной функции
 if __name__ == "__main__":
-    db = ClientRepDB(
+    # Создаем подключение к базе данных с помощью класса Singleton
+    db_conn = DatabaseConnection(
         host="localhost",
         user="root",
         password="1234567890",
         database="Local instance MySQL91"
-    )
+    ).get_connection()
 
-    db.add_client("Иван Иванов", "ivanovSDDDDS@example.com", "1234567890")
-    db.add_client("Пётр Петров", "petrovDDDSDSD@example.com", "0987654321")
+    # Создаем экземпляр ClientRepDB, передавая подключение
+    db = ClientRepDB(db_conn)
+
+    db.add_client("Иван Иванов", "ivanovSDDDDS1@example.com", "1234567890")
+    db.add_client("Пётр Петров", "petrovDDDSDSD1@example.com", "0987654321")
 
     client = db.get_by_id(1)
     print("Клиент с ID 1:", client)
@@ -85,10 +85,8 @@ if __name__ == "__main__":
     print("Список клиентов:", clients)
 
     db.update_client_by_id(1, name="Иван Иванович", email="ivan_updated@example.com")
-
-
     db.delete_client_by_id(2)
-
 
     count = db.get_count()
     print("Количество клиентов:", count)
+
